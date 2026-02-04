@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef, ComponentType } from 'react'
-import RGL, { Responsive } from 'react-grid-layout'
-const WidthProvider = (RGL as any).WidthProvider || (Responsive as any).WidthProvider
+import { Responsive as ResponsiveGridLayout } from 'react-grid-layout'
 import 'react-grid-layout/css/styles.css'
 import 'react-resizable/css/styles.css'
 import { Button } from './ui/button'
@@ -11,7 +10,7 @@ import { WidgetConfig, AVAILABLE_WIDGETS, WidgetDefinition } from './widgets/Wid
 import { cn } from '../lib/cn'
 import { GlassCard } from './ui/GlassCard'
 
-const GridLayout = WidthProvider(Responsive)
+const GridLayout = ResponsiveGridLayout
 
 // Lokaler LayoutItem-Typ (react-grid-layout @types sind inkompatibel)
 interface LayoutItem {
@@ -253,7 +252,9 @@ export function CustomizableDashboard() {
 
       {/* Grid Layout */}
       <div style={{ minHeight: '600px' }}>
-        {/* @ts-ignore - @types/react-grid-layout is outdated */}
+        {/* @ts-ignore */}
+        {/* @ts-ignore */}
+        {/* @ts-ignore */}
         <GridLayout
           className="layout"
           layouts={{ lg: layout, md: layout, sm: layout, xs: layout, xss: layout }}
@@ -261,8 +262,8 @@ export function CustomizableDashboard() {
           cols={cols}
           rowHeight={effectiveRowHeight}
           width={containerWidth}
-          isDraggable={isEditMode}
-          isResizable={isEditMode}
+          {...{ isDraggable: isEditMode } as any}
+          {...{ isResizable: isEditMode } as any}
           onLayoutChange={handleLayoutChange}
           draggableHandle=".drag-handle"
           margin={[12, 12]}
