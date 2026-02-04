@@ -1,0 +1,25 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ls:*)",
+      "Bash(dir:*)",
+      "Bash(npm create:*)",
+      "Bash(npm init:*)",
+      "Bash(npm install:*)",
+      "Bash(npx vite)",
+      "Bash(node node_modulesvitebinvite.js)",
+      "Bash(./dev.bat)",
+      "Bash(xcopy:*)",
+      "Bash(robocopy:*)",
+      "Bash(cmd /c \"move \"\"D:\\\\NAS-HDD\\\\Digital Work & Apps & Coding\\\\Dividenden App\\\\Dividenden App 2026 - v1\"\" \"\"D:\\\\NAS-HDD\\\\Digital Work & Apps & Coding\\\\Dividenden App\\\\Divi-App\"\"\")",
+      "Bash(powershell -Command \"Rename-Item -Path ''D:\\\\NAS-HDD\\\\Digital Work & Apps & Coding\\\\Dividenden App\\\\Dividenden App 2026 - v1'' -NewName ''Divi-App''\")",
+      "Bash(taskkill:*)",
+      "Bash(npm run dev:*)",
+      "Bash(npx tsc:*)",
+      "Bash(npm run build:*)",
+      "Bash(netstat:*)",
+      "Bash(findstr:*)",
+      "Bash(find:*)"
+    ]
+  }
+}

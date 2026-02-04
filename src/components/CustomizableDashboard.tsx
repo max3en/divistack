@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, ComponentType } from 'react'
-import RGL from 'react-grid-layout'
+import RGL, { Responsive } from 'react-grid-layout'
+const WidthProvider = (RGL as any).WidthProvider || (Responsive as any).WidthProvider
 import 'react-grid-layout/css/styles.css'
 import 'react-resizable/css/styles.css'
 import { Button } from './ui/button'
@@ -10,9 +11,7 @@ import { WidgetConfig, AVAILABLE_WIDGETS, WidgetDefinition } from './widgets/Wid
 import { cn } from '../lib/cn'
 import { GlassCard } from './ui/GlassCard'
 
-// Cast GridLayout to any to bypass outdated @types/react-grid-layout
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const GridLayout = RGL as ComponentType<any>
+const GridLayout = WidthProvider(Responsive)
 
 // Lokaler LayoutItem-Typ (react-grid-layout @types sind inkompatibel)
 interface LayoutItem {
@@ -40,6 +39,7 @@ export function CustomizableDashboard() {
   const [isEditMode, setIsEditMode] = useState(false)
   const [showAddWidget, setShowAddWidget] = useState(false)
   const [containerWidth, setContainerWidth] = useState(1200)
+  const [rowHeight, setRowHeight] = useState(65)
   const containerRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -67,17 +67,34 @@ export function CustomizableDashboard() {
     return () => window.removeEventListener('resize', updateWidth)
   }, [])
 
+  useEffect(() => {
+    const savedHeight = localStorage.getItem('divistack-dashboard-row-height')
+    if (savedHeight) {
+      setRowHeight(parseInt(savedHeight))
+    }
+  }, [])
+
   const saveWidgets = (newWidgets: WidgetConfig[]) => {
     setWidgets(newWidgets)
     localStorage.setItem('divistack-dashboard-widgets', JSON.stringify(newWidgets))
   }
 
+  const updateRowHeight = (height: number) => {
+    setRowHeight(height)
+    localStorage.setItem('divistack-dashboard-row-height', height.toString())
+  }
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const handleLayoutChange = (layout: any) => {
+  const handleLayoutChange = (currentLayout: any, allLayouts: any) => {
     if (!isEditMode) return
 
+    // Wir speichern nur das primäre (Desktop) Layout, 
+    // die anderen werden von RGL generiert wenn nicht vorhanden.
+    // Oder wir speichern alle, aber für Einfachheit bleiben wir bei einem.
+    const desktopLayout = allLayouts.lg || currentLayout
+
     const updatedWidgets = widgets.map(widget => {
-      const layoutItem = layout.find((l: LayoutItem) => l.i === widget.id)
+      const layoutItem = desktopLayout.find((l: LayoutItem) => l.i === widget.id)
       if (layoutItem) {
         return {
           ...widget,
@@ -124,56 +141,72 @@ export function CustomizableDashboard() {
 
   const layout = widgets.map(w => ({ i: w.id, x: w.x, y: w.y, w: w.w, h: w.h }))
 
+  // Breakpoints und Spalten für Mobile
+  const breakpoints = { lg: 1200, md: 996, sm: 768, xs: 480, xss: 0 }
+  const cols = { lg: 12, md: 10, sm: 6, xs: 4, xss: 2 }
+
+  // Automatische Höhenanpassung für Mobile
+  const effectiveRowHeight = containerWidth < 768 ? Math.max(rowHeight, 80) : rowHeight
+
   console.log('CustomizableDashboard render:', { widgets, layout, isEditMode })
 
   return (
     <div className="space-y-4" ref={containerRef}>
       {/* Header Controls */}
       {/* Header Controls */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 py-4">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 py-8">
         <div>
-          <h2 className="text-3xl font-black tracking-tighter bg-gradient-to-r from-primary to-primary-foreground bg-clip-text text-transparent italic">
-            DASHBOARD
+          <h2 className="text-3xl font-black tracking-tighter text-white italic uppercase">
+            Übersicht
           </h2>
-          <p className="text-sm font-bold text-muted-foreground uppercase tracking-widest opacity-70">
-            {isEditMode ? 'Kommandozentrale • Bearbeitungsmodus' : 'Deine Finanzielle Übersicht'}
-          </p>
+          <div className="flex items-center gap-2 mt-1">
+            <div className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
+            <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] opacity-80">
+              Live-Portfoliodaten • {isEditMode ? 'Bearbeitungsmodus' : 'Analyse'}
+            </p>
+          </div>
         </div>
-        <div className="flex gap-2">
+        <div className="flex items-center gap-3">
           {isEditMode && (
             <>
+              <div className="flex items-center gap-4 bg-white/5 border border-white/10 px-6 py-2 rounded-2xl backdrop-blur-md">
+                <span className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">Raster</span>
+                <input
+                  type="range"
+                  min="40"
+                  max="120"
+                  step="5"
+                  value={rowHeight}
+                  onChange={(e) => updateRowHeight(parseInt(e.target.value))}
+                  className="w-24 md:w-32 accent-primary cursor-pointer"
+                />
+                <span className="text-[10px] font-black text-primary w-6">{rowHeight}</span>
+              </div>
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => setShowAddWidget(!showAddWidget)}
-                className="rounded-full font-bold border-primary/20 hover:bg-primary/10"
+                className="rounded-2xl font-bold border-white/10 bg-white/5 hover:bg-white/10 text-white h-10 px-6"
               >
                 <Plus className="h-4 w-4 mr-2" />
-                Widget
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={resetToDefault}
-                className="rounded-full text-xs font-bold text-muted-foreground uppercase"
-              >
-                Reset
+                Widget hinzufügen
               </Button>
             </>
           )}
           <Button
             size="sm"
-            variant={isEditMode ? 'default' : 'outline'}
             onClick={() => {
               setIsEditMode(!isEditMode)
               setShowAddWidget(false)
             }}
             className={cn(
-              "rounded-full px-6 font-bold transition-all",
-              isEditMode ? "bg-primary text-primary-foreground shadow-[0_0_20px_rgba(var(--primary),0.3)]" : "border-border/50 backdrop-blur-sm"
+              "rounded-2xl px-8 font-black uppercase tracking-widest text-[10px] h-10 transition-all duration-500",
+              isEditMode
+                ? "bg-primary text-white shadow-[0_0_30px_rgba(var(--primary),0.4)] hover:shadow-[0_0_40px_rgba(var(--primary),0.6)]"
+                : "bg-white/5 border border-white/10 text-white hover:bg-white/10"
             )}
           >
-            <Settings className={cn("h-4 w-4 mr-2", isEditMode && "animate-[spin_3s_linear_infinite]")} />
+            <Settings className={cn("h-4 w-4 mr-2", isEditMode && "animate-spin")} />
             {isEditMode ? 'Speichern' : 'Anpassen'}
           </Button>
         </div>
@@ -223,14 +256,16 @@ export function CustomizableDashboard() {
         {/* @ts-ignore - @types/react-grid-layout is outdated */}
         <GridLayout
           className="layout"
-          layout={layout}
-          cols={12}
-          rowHeight={80}
+          layouts={{ lg: layout, md: layout, sm: layout, xs: layout, xss: layout }}
+          breakpoints={breakpoints}
+          cols={cols}
+          rowHeight={effectiveRowHeight}
           width={containerWidth}
           isDraggable={isEditMode}
           isResizable={isEditMode}
           onLayoutChange={handleLayoutChange}
           draggableHandle=".drag-handle"
+          margin={[12, 12]}
         >
           {widgets.map(widget => (
             <div key={widget.id} className="relative">
@@ -258,7 +293,7 @@ export function CustomizableDashboard() {
                 'h-full',
                 isEditMode && 'pointer-events-none'
               )}>
-                <WidgetRenderer type={widget.type} />
+                <WidgetRenderer type={widget.type} rowHeight={rowHeight} />
               </div>
             </div>
           ))}

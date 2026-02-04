@@ -37,12 +37,31 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        // Neon UI Colors
+        neon: {
+          purple: "hsl(var(--neon-purple))",
+          green: "hsl(var(--neon-green))",
+          yellow: "hsl(var(--neon-yellow))",
+          blue: "hsl(var(--neon-blue))",
+        }
       },
       borderRadius: {
+        '3xl': '1.5rem',
+        '4xl': '2rem',
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
       },
+      animation: {
+        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+        'glow': 'glow 2s ease-in-out infinite alternate',
+      },
+      keyframes: {
+        glow: {
+          '0%': { boxShadow: '0 0 5px hsla(263, 100%, 70%, 0.2)' },
+          '100%': { boxShadow: '0 0 20px hsla(263, 100%, 70%, 0.6)' },
+        }
+      }
     },
   },
   plugins: [],

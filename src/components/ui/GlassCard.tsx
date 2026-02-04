@@ -4,15 +4,16 @@ import { cn } from '../../lib/cn'
 interface GlassCardProps {
     children: React.ReactNode
     className?: string
-    gradient?: boolean
+    variant?: 'default' | 'purple' | 'green' | 'yellow'
 }
 
-export function GlassCard({ children, className, gradient = false }: GlassCardProps) {
+export function GlassCard({ children, className, variant = 'default' }: GlassCardProps) {
     return (
         <div className={cn(
-            "relative overflow-hidden rounded-2xl border border-white/10 dark:border-white/5",
-            "bg-white/40 dark:bg-black/40 backdrop-blur-xl shadow-xl",
-            gradient && "before:absolute before:inset-0 before:bg-gradient-to-br before:from-primary/10 before:to-transparent before:pointer-events-none",
+            "glass-card relative overflow-hidden rounded-[2rem]",
+            variant === 'purple' && "bg-gradient-to-br from-primary/20 via-primary/5 to-transparent border-primary/20",
+            variant === 'green' && "bg-gradient-to-br from-green-500/10 via-green-500/5 to-transparent border-green-500/10",
+            variant === 'yellow' && "bg-gradient-to-br from-yellow-500/10 via-yellow-500/5 to-transparent border-yellow-500/10",
             className
         )}>
             {children}

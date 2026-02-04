@@ -1,5 +1,5 @@
 import { GlassCard } from '../ui/GlassCard'
-import { LucideIcon } from 'lucide-react'
+import { LucideIcon, MoreHorizontal } from 'lucide-react'
 import { cn } from '../../lib/cn'
 
 interface KPIWidgetProps {
@@ -9,91 +9,133 @@ interface KPIWidgetProps {
   icon: LucideIcon
   color: 'green' | 'blue' | 'purple' | 'orange' | 'pink' | 'cyan' | 'red'
   trend?: { value: number; isPositive: boolean }
+  rowHeight?: number
 }
 
-const colorConfigs = {
+const colorConfigs: Record<string, any> = {
   green: {
-    gradient: 'from-green-500/20 to-emerald-500/0',
+    variant: 'green',
     iconBg: 'bg-green-500/10',
-    text: 'text-green-600 dark:text-green-400',
-    icon: 'text-green-500',
+    text: 'text-white',
+    icon: 'text-green-400',
+    badge: 'bg-green-400/20 text-green-400',
   },
   blue: {
-    gradient: 'from-blue-500/20 to-indigo-500/0',
+    variant: 'default',
     iconBg: 'bg-blue-500/10',
-    text: 'text-blue-600 dark:text-blue-400',
-    icon: 'text-blue-500',
+    text: 'text-white',
+    icon: 'text-blue-400',
+    badge: 'bg-blue-400/20 text-blue-400',
   },
   purple: {
-    gradient: 'from-purple-500/20 to-violet-500/0',
-    iconBg: 'bg-purple-500/10',
-    text: 'text-purple-600 dark:text-purple-400',
-    icon: 'text-purple-500',
+    variant: 'purple',
+    iconBg: 'bg-purple-500/20',
+    text: 'text-white',
+    icon: 'text-purple-400',
+    badge: 'bg-purple-400/20 text-purple-400',
   },
   orange: {
-    gradient: 'from-orange-500/20 to-amber-500/0',
+    variant: 'yellow',
     iconBg: 'bg-orange-500/10',
-    text: 'text-orange-600 dark:text-orange-400',
-    icon: 'text-orange-500',
+    text: 'text-white',
+    icon: 'text-orange-400',
+    badge: 'bg-orange-400/20 text-orange-400',
   },
   pink: {
-    gradient: 'from-pink-500/20 to-rose-500/0',
+    variant: 'default',
     iconBg: 'bg-pink-500/10',
-    text: 'text-pink-600 dark:text-pink-400',
-    icon: 'text-pink-500',
+    text: 'text-white',
+    icon: 'text-pink-400',
+    badge: 'bg-pink-400/20 text-pink-400',
   },
   cyan: {
-    gradient: 'from-cyan-500/20 to-sky-500/0',
+    variant: 'default',
     iconBg: 'bg-cyan-500/10',
-    text: 'text-cyan-600 dark:text-cyan-400',
-    icon: 'text-cyan-500',
+    text: 'text-white',
+    icon: 'text-cyan-400',
+    badge: 'bg-cyan-400/20 text-cyan-400',
   },
   red: {
-    gradient: 'from-red-500/20 to-orange-500/0',
+    variant: 'default',
     iconBg: 'bg-red-500/10',
-    text: 'text-red-600 dark:text-red-400',
-    icon: 'text-red-500',
+    text: 'text-white',
+    icon: 'text-red-400',
+    badge: 'bg-red-400/20 text-red-400',
   },
 }
 
-export function KPIWidget({ title, value, subtitle, icon: Icon, color, trend }: KPIWidgetProps) {
-  const config = colorConfigs[color]
+export function KPIWidget({ title, value, subtitle, icon: Icon, color, trend, rowHeight = 65 }: KPIWidgetProps) {
+  const config = colorConfigs[color] || colorConfigs.purple
+
+  const isCompact = rowHeight < 60
+  const isMini = rowHeight < 50
 
   return (
-    <div className="group h-full transition-all hover:scale-[1.02] active:scale-[0.98]">
-      <GlassCard className="h-full border-none shadow-lg overflow-hidden flex flex-col justify-between">
-        <div className={cn("absolute inset-0 bg-gradient-to-br opacity-50", config.gradient)} />
-
-        <div className="relative p-6 flex flex-col h-full justify-between gap-2">
-          <div className="flex items-start justify-between">
-            <div className={cn("p-2.5 rounded-xl transition-colors", config.iconBg)}>
-              <Icon className={cn("h-5 w-5", config.icon)} />
-            </div>
-            {trend && (
+    <div className="group h-full transition-all duration-300">
+      <GlassCard variant={config.variant} className="h-full border-white/5 hover:border-white/10 transition-colors flex flex-col justify-between">
+        <div className={cn(
+          "relative flex flex-col h-full",
+          isMini ? "p-3" : isCompact ? "p-4" : "p-5"
+        )}>
+          {/* Header */}
+          <div className="flex items-center justify-between mb-auto">
+            <div className="flex items-center gap-3">
               <div className={cn(
-                "px-2 py-1 rounded-full text-[10px] font-bold flex items-center gap-1",
-                trend.isPositive ? "bg-green-500/10 text-green-500" : "bg-red-500/10 text-red-500"
+                "rounded-full flex items-center justify-center transition-all",
+                config.iconBg,
+                isMini ? "h-7 w-7" : "h-9 w-9"
               )}>
-                {trend.isPositive ? '+ ' : '- '}
-                {Math.abs(trend.value).toFixed(1)}%
+                <Icon className={cn(
+                  config.icon,
+                  isMini ? "h-3.5 w-3.5" : "h-4.5 w-4.5"
+                )} />
               </div>
-            )}
+              <p className={cn(
+                "font-bold text-muted-foreground tracking-tight whitespace-nowrap",
+                isMini ? "text-[10px]" : "text-xs"
+              )}>{title}</p>
+            </div>
+            {!isMini && <MoreHorizontal className="h-4 w-4 text-muted-foreground/30" />}
           </div>
 
-          <div className="space-y-1">
-            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{title}</p>
-            <div className="flex items-baseline gap-1">
-              <span className={cn("text-2xl font-black tracking-tight", config.text)}>
-                {typeof value === 'number' ? value.toLocaleString('de-DE', { maximumFractionDigits: 0 }) : value}
+          {/* Main Value Area */}
+          <div className="mt-4 flex flex-col">
+            <div className="flex items-center gap-3 flex-wrap">
+              <span className={cn(
+                "font-bold tracking-tight text-white",
+                isMini ? "text-xl" : isCompact ? "text-2xl" : "text-3xl"
+              )}>
+                {typeof value === 'number' ? value.toLocaleString('de-DE', { minimumFractionDigits: 0, maximumFractionDigits: 0 }) : value}
+                {typeof value === 'number' && <span className="ml-1 opacity-50 text-sm font-medium">,00</span>}
               </span>
-              {typeof value === 'number' && <span className="text-sm font-bold text-muted-foreground opacity-50">€</span>}
+
+              {trend && !isMini && (
+                <div className={cn(
+                  "px-2 py-0.5 rounded-full text-[10px] font-black flex items-center gap-1",
+                  trend.isPositive ? "bg-green-400/10 text-green-400" : "bg-red-400/10 text-red-400"
+                )}>
+                  {trend.isPositive ? '↑ ' : '↓ '}
+                  {Math.abs(trend.value).toFixed(0)}%
+                </div>
+              )}
             </div>
-            {subtitle && (
-              <p className="text-[11px] text-muted-foreground/80 font-medium truncate">
+
+            {(subtitle || (trend && isMini)) && (
+              <p className="mt-1 text-[10px] text-muted-foreground/60 font-bold uppercase tracking-widest flex items-center gap-2">
                 {subtitle}
+                {trend && isMini && (
+                  <span className={trend.isPositive ? "text-green-400" : "text-red-400"}>
+                    {trend.isPositive ? '↑' : '↓'} {Math.abs(trend.value).toFixed(0)}%
+                  </span>
+                )}
               </p>
             )}
           </div>
+
+          {/* Purple Glow Effect for Purple Variant */}
+          {config.variant === 'purple' && (
+            <div className="absolute bottom-[-20%] left-[20%] right-[20%] h-[40%] bg-primary/20 blur-[40px] rounded-full pointer-events-none opacity-50" />
+          )}
         </div>
       </GlassCard>
     </div>

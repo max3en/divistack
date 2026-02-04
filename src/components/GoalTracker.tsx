@@ -1,16 +1,18 @@
 import { useState, useEffect } from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from './ui/card'
 import { Button } from './ui/button'
 import { Input } from './ui/input'
 import { Label } from './ui/label'
-import { Target, TrendingUp, Edit2, Check, X } from 'lucide-react'
+import { Target, TrendingUp, Edit2, Check, X, Award } from 'lucide-react'
+import { GlassCard } from './ui/GlassCard'
+import { cn } from '../lib/cn'
 
 interface GoalTrackerProps {
   currentMonthlyDividend: number
   currentAnnualDividend: number
+  isCompact?: boolean
 }
 
-export function GoalTracker({ currentMonthlyDividend, currentAnnualDividend }: GoalTrackerProps) {
+export function GoalTracker({ currentMonthlyDividend, currentAnnualDividend, isCompact }: GoalTrackerProps) {
   const [monthlyGoal, setMonthlyGoal] = useState<number>(500)
   const [isEditing, setIsEditing] = useState(false)
   const [editValue, setEditValue] = useState<string>('500')
@@ -44,46 +46,43 @@ export function GoalTracker({ currentMonthlyDividend, currentAnnualDividend }: G
   const annualRemaining = Math.max(0, annualGoal - currentAnnualDividend)
 
   return (
-    <Card className="border-primary/20 h-full flex flex-col">
-      <CardHeader className="flex-shrink-0">
-        <div className="flex items-center justify-between">
-          <CardTitle className="flex items-center gap-2">
-            <Target className="h-5 w-5 text-primary" />
-            Dividenden-Ziel
-          </CardTitle>
-          {!isEditing ? (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setIsEditing(true)}
-            >
-              <Edit2 className="h-4 w-4" />
-            </Button>
-          ) : (
-            <div className="flex gap-1">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={saveGoal}
-              >
-                <Check className="h-4 w-4 text-green-500" />
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={cancelEdit}
-              >
-                <X className="h-4 w-4 text-red-500" />
-              </Button>
-            </div>
-          )}
+    <div className="h-full flex flex-col">
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-2">
+          <div className="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center border border-primary/20">
+            <Target className="h-4 w-4 text-primary" />
+          </div>
+          <h3 className="font-bold text-sm md:text-base text-white tracking-tight">Dividenden-Ziel</h3>
         </div>
-      </CardHeader>
-      <CardContent className="space-y-6 flex-1 overflow-auto">
-        {/* Ziel-Eingabe */}
+        {!isEditing ? (
+          <button
+            onClick={() => setIsEditing(true)}
+            className="p-2 rounded-xl text-muted-foreground hover:text-white hover:bg-white/5 transition-all"
+          >
+            <Edit2 className="h-4 w-4" />
+          </button>
+        ) : (
+          <div className="flex gap-1">
+            <button
+              onClick={saveGoal}
+              className="p-1.5 rounded-lg text-green-400 hover:bg-green-400/10 transition-all"
+            >
+              <Check className="h-4 w-4" />
+            </button>
+            <button
+              onClick={cancelEdit}
+              className="p-1.5 rounded-lg text-red-400 hover:bg-red-400/10 transition-all"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          </div>
+        )}
+      </div>
+
+      <div className="flex-1 space-y-6 overflow-auto no-scrollbar">
         {isEditing ? (
-          <div className="space-y-2">
-            <Label htmlFor="goal">Monatliches Ziel (€)</Label>
+          <div className="space-y-3 bg-white/5 p-4 rounded-2xl border border-white/5">
+            <Label htmlFor="goal" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Monatliches Ziel (€)</Label>
             <Input
               id="goal"
               type="number"
@@ -91,88 +90,69 @@ export function GoalTracker({ currentMonthlyDividend, currentAnnualDividend }: G
               step="50"
               value={editValue}
               onChange={(e) => setEditValue(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') saveGoal()
-                if (e.key === 'Escape') cancelEdit()
-              }}
+              className="bg-black/20 border-white/10 rounded-xl h-11 focus:border-primary/50 text-white font-bold"
               autoFocus
             />
           </div>
         ) : (
-          <div className="text-center">
-            <p className="text-sm text-muted-foreground">Monatliches Ziel</p>
-            <p className="text-3xl font-bold text-primary">{monthlyGoal.toFixed(0)} €</p>
+          <div className="flex flex-col items-center py-4 bg-primary/5 rounded-[2rem] border border-primary/10 relative overflow-hidden group">
+            <p className="text-[10px] text-muted-foreground uppercase font-black tracking-[0.2em] relative z-10">Zielbetrag</p>
+            <p className="text-4xl font-black text-white mt-1 relative z-10">{monthlyGoal.toFixed(0)} €</p>
+            <div className="absolute inset-0 bg-gradient-to-t from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
           </div>
         )}
 
-        {/* Progress Bar */}
-        <div className="space-y-2">
-          <div className="flex justify-between text-sm">
-            <span className="text-muted-foreground">Fortschritt</span>
-            <span className="font-semibold">
-              {progress >= 100 ? '🎉 ' : ''}
-              {Math.min(100, progress).toFixed(1)}%
-            </span>
+        <div className="space-y-3">
+          <div className="flex justify-between items-end px-1">
+            <div className="flex flex-col">
+              <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Fortschritt</span>
+              <span className="text-sm font-bold text-white">{Math.min(100, progress).toFixed(1)}%</span>
+            </div>
+            {progress >= 100 && (
+              <div className="h-8 w-8 rounded-full bg-green-500/20 flex items-center justify-center border border-green-500/30 animate-bounce">
+                <Award className="h-4 w-4 text-green-400" />
+              </div>
+            )}
           </div>
-          <div className="h-4 bg-secondary rounded-full overflow-hidden">
+          <div className="h-3 bg-white/5 rounded-full overflow-hidden border border-white/5 p-0.5">
             <div
-              className={`h-full transition-all duration-500 ${
+              className={cn(
+                "h-full rounded-full transition-all duration-1000",
                 progress >= 100
-                  ? 'bg-gradient-to-r from-green-500 to-emerald-500'
-                  : 'bg-gradient-to-r from-primary to-blue-500'
-              }`}
+                  ? 'bg-gradient-to-r from-green-500 to-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.5)]'
+                  : 'bg-gradient-to-r from-primary to-primary/50 shadow-[0_0_15px_rgba(var(--primary),0.5)]'
+              )}
               style={{ width: `${Math.min(100, progress)}%` }}
             />
           </div>
         </div>
 
-        {/* Stats Grid */}
-        <div className="grid grid-cols-2 gap-4">
-          <div className="space-y-1 p-3 rounded-lg bg-accent/50">
-            <p className="text-xs text-muted-foreground">Aktuell/Monat</p>
-            <p className="text-lg font-semibold">{currentMonthlyDividend.toFixed(0)} €</p>
+        <div className="grid grid-cols-2 gap-3">
+          <div className="p-4 rounded-2xl bg-white/5 border border-white/5 flex flex-col items-center">
+            <p className="text-[9px] text-muted-foreground uppercase font-black tracking-widest mb-1">Status Quo</p>
+            <p className="text-sm font-bold text-white">{currentMonthlyDividend.toFixed(0)} €</p>
           </div>
-          <div className="space-y-1 p-3 rounded-lg bg-accent/50">
-            <p className="text-xs text-muted-foreground">Noch benötigt</p>
-            <p className="text-lg font-semibold text-orange-500">
+          <div className="p-4 rounded-2xl bg-white/5 border border-white/5 flex flex-col items-center">
+            <p className="text-[9px] text-muted-foreground uppercase font-black tracking-widest mb-1">Noch offen</p>
+            <p className={cn("text-sm font-bold", remaining > 0 ? "text-orange-400" : "text-green-400")}>
               {remaining.toFixed(0)} €
             </p>
           </div>
         </div>
 
-        {/* Jährliche Projektion */}
-        <div className="pt-4 border-t space-y-2">
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <TrendingUp className="h-4 w-4" />
-            <span>Jährliche Projektion</span>
-          </div>
-          <div className="grid grid-cols-2 gap-4 text-sm">
-            <div>
-              <p className="text-muted-foreground">Ziel</p>
-              <p className="font-semibold">{annualGoal.toFixed(0)} €</p>
+        {progress < 100 && (
+          <div className="p-4 rounded-2xl bg-white/5 border border-white/5 flex flex-col gap-2">
+            <div className="flex items-center gap-2 text-[10px] text-muted-foreground font-black uppercase tracking-widest">
+              <TrendingUp className="h-3 w-3" />
+              <span>Jährliche Projektion</span>
             </div>
-            <div>
-              <p className="text-muted-foreground">Noch benötigt</p>
-              <p className="font-semibold text-orange-500">{annualRemaining.toFixed(0)} €</p>
+            <div className="flex justify-between items-center px-1">
+              <p className="text-xs text-muted-foreground font-bold">Ziel: <span className="text-white ml-2">{annualGoal.toFixed(0)} €</span></p>
+              <p className="text-xs text-muted-foreground font-bold">Rest: <span className="text-orange-400 ml-2">{Math.max(0, annualRemaining).toFixed(0)} €</span></p>
             </div>
           </div>
-        </div>
-
-        {/* Motivationstext */}
-        {progress >= 100 ? (
-          <div className="text-center p-3 bg-green-500/10 rounded-lg border border-green-500/20">
-            <p className="text-sm font-medium text-green-600 dark:text-green-400">
-              🎉 Glückwunsch! Ziel erreicht!
-            </p>
-          </div>
-        ) : progress >= 75 ? (
-          <div className="text-center p-3 bg-blue-500/10 rounded-lg border border-blue-500/20">
-            <p className="text-sm font-medium text-blue-600 dark:text-blue-400">
-              💪 Fast geschafft! Nur noch {remaining.toFixed(0)} € bis zum Ziel!
-            </p>
-          </div>
-        ) : null}
-      </CardContent>
-    </Card>
+        )}
+      </div>
+    </div>
   )
 }
