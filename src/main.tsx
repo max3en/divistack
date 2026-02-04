@@ -29,11 +29,11 @@ if (cachedStocks) {
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <ToastProvider>
-      {/* <App /> */}
-      <div style={{ padding: 20, color: 'white' }}>
+      <App />
+      {/* <div style={{ padding: 20, color: 'white' }}>
         <h1>Debug Mode</h1>
         <p>If you see this, React is working. The issue is inside App.tsx</p>
-      </div>
+      </div> */}
     </ToastProvider>
   </StrictMode>,
 )
