@@ -1,0 +1,4 @@
+﻿src/components/PortfolioList.tsx(166,26): error TS2322: Type '{ children: (Element | Element[])[]; className: string; }' is not assignable to type 'IntrinsicAttributes & { children: ReactNode; }'.
+  Property 'className' does not exist on type 'IntrinsicAttributes & { children: ReactNode; }'.
+src/components/PortfolioList.tsx(180,26): error TS2322: Type '{ children: (Element | Element[])[]; className: string; }' is not assignable to type 'IntrinsicAttributes & { children: ReactNode; }'.
+  Property 'className' does not exist on type 'IntrinsicAttributes & { children: ReactNode; }'.

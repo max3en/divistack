@@ -2,101 +2,93 @@ import * as React from "react"
 import { cn } from "../../lib/cn"
 import { ChevronDown } from "lucide-react"
 
-export interface SelectProps {
-  children: React.ReactNode
-  value?: string
+export interface SelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
   onValueChange?: (value: string) => void
 }
 
-const SelectContext = React.createContext<{
-  value?: string
-  onValueChange?: (value: string) => void
-}>({})
+const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
+  ({ className, children, onValueChange, onChange, value, ...props }, ref) => {
+    // Collect options if they are passed via modern API
+    const items: { value: string; label: React.ReactNode }[] = []
 
-const Select = ({ children, value, onValueChange }: SelectProps) => {
-  return (
-    <SelectContext.Provider value={{ value, onValueChange }}>
-      <div className="relative w-full">
-        {children}
-      </div>
-    </SelectContext.Provider>
-  )
-}
+    // Help identify children
+    React.Children.forEach(children, (child) => {
+      if (!child) return
 
-const SelectTrigger = React.forwardRef<HTMLButtonElement, React.ButtonHTMLAttributes<HTMLButtonElement>>(
-  ({ className, children, ...props }, ref) => {
+      // Pattern 1: Legacy <option>
+      if ((child as any).type === 'option') {
+        items.push({ value: (child as any).props.value, label: (child as any).props.children })
+      }
+
+      // Pattern 2: Modern SelectContent -> SelectItem
+      if ((child as any).type === SelectContent) {
+        React.Children.forEach((child as any).props.children, (item) => {
+          if (item && (item as any).type === SelectItem) {
+            items.push({ value: (item as any).props.value, label: (item as any).props.children })
+          }
+        })
+      }
+    })
+
+    const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+      onChange?.(e)
+      onValueChange?.(e.target.value)
+    }
+
+    // If it's the modern API, we might just have SelectTrigger and SelectContent as siblings
+    const isModernAPI = React.Children.toArray(children).some(
+      (child: any) => child?.type === SelectTrigger || child?.type === SelectContent
+    )
+
     return (
-      <button
-        ref={ref}
-        className={cn(
-          "flex h-10 w-full items-center justify-between rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50",
-          className
+      <div className={cn("relative group w-full", isModernAPI ? "" : className)}>
+        <select
+          ref={ref}
+          value={value}
+          onChange={handleChange}
+          className={cn(
+            "appearance-none h-12 w-full bg-white/5 border border-white/5 hover:border-white/10 rounded-2xl px-4 py-2 text-white text-sm font-medium focus:outline-none focus:ring-1 focus:ring-primary/30 transition-all cursor-pointer",
+            isModernAPI ? "absolute inset-0 opacity-0 z-10" : ""
+          )}
+          {...props}
+        >
+          {items.length > 0 ? (
+            items.map((item) => (
+              <option key={item.value} value={item.value} className="bg-[#1a1a1c] text-white">
+                {typeof item.label === 'string' ? item.label : String(item.value)}
+              </option>
+            ))
+          ) : (
+            children
+          )}
+        </select>
+
+        {!isModernAPI && (
+          <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none group-focus-within:text-primary transition-colors" />
         )}
-        {...props}
-      >
-        {children}
-        <ChevronDown className="h-4 w-4 opacity-50" />
-      </button>
+
+        {isModernAPI && children}
+      </div>
     )
   }
 )
-SelectTrigger.displayName = "SelectTrigger"
+Select.displayName = "Select"
 
-const SelectValue = ({ children, placeholder }: { children?: React.ReactNode, placeholder?: string }) => {
-  const { value } = React.useContext(SelectContext)
-  return <span className="pointer-events-none">{value === 'all' ? placeholder : value || placeholder}</span>
+const SelectTrigger = ({ className, children }: { className?: string; children: React.ReactNode }) => (
+  <div className={cn(
+    "flex h-12 w-full items-center justify-between rounded-2xl border border-white/5 bg-white/5 px-4 py-2 text-sm text-white group-hover:border-white/10 transition-all",
+    className
+  )}>
+    {children}
+    <ChevronDown className="h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
+  </div>
+)
+
+const SelectValue = ({ placeholder }: { placeholder?: string }) => {
+  return <span className="text-white font-medium">{placeholder}</span>
 }
 
-const SelectContent = ({ children, className }: { children: React.ReactNode; className?: string }) => {
-  const { value, onValueChange } = React.useContext(SelectContext)
+const SelectContent = ({ children, className }: { children: React.ReactNode; className?: string }) => null
+const SelectItem = ({ value, children, className }: { value: string; children: React.ReactNode; className?: string }) => null
 
-  // For simplicity, we'll render a hidden native select that handles the actual logic
-  // or just render the children in a way that works.
-  // In this simplified version, let's keep it as is but fix the types.
-  return (
-    <div className={cn("hidden", className)}>
-      {children}
-    </div>
-  )
-}
-
-// In our simple app, we actually want the Select to be a functional native select 
-// because we don't have a full portal/dropdown implementation.
-// Let's refactor to a more "Hybrid" approach that works for the user's code.
-
-const PremiumSelect = ({ children, value, onValueChange, className }: any) => {
-  const items: any[] = []
-  React.Children.forEach(children, (child) => {
-    if (child.type === SelectContent) {
-      React.Children.forEach(child.props.children, (item) => {
-        if (item.type === SelectItem) {
-          items.push({ value: item.props.value, label: item.props.children })
-        }
-      })
-    }
-  })
-
-  return (
-    <div className="relative group">
-      <select
-        value={value}
-        onChange={(e) => onValueChange?.(e.target.value)}
-        className={cn(
-          "appearance-none h-12 w-full bg-white/5 border border-white/5 hover:border-white/10 rounded-2xl px-4 py-2 text-white text-sm font-medium focus:outline-none focus:ring-1 focus:ring-primary/30 transition-all cursor-pointer",
-          className
-        )}
-      >
-        {items.map((item) => (
-          <option key={item.value} value={item.value} className="bg-[#1a1a1c] text-white">
-            {item.label}
-          </option>
-        ))}
-      </select>
-      <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none group-focus-within:text-primary transition-colors" />
-    </div>
-  )
-}
-
-const SelectItem = ({ value, children }: { value: string, children: React.ReactNode }) => null
-
-export { PremiumSelect as Select, SelectTrigger, SelectValue, SelectContent, SelectItem }
+export { Select, SelectTrigger, SelectValue, SelectContent, SelectItem }

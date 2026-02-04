@@ -219,7 +219,7 @@ export function PositionForm({ editingPosition, onClose }: PositionFormProps) {
                 id="name"
                 required
                 value={formData.name}
-                onChange={e => setFormData({ ...formData, name: e.target.value })}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, name: e.target.value })}
                 placeholder="z.B. Apple Inc."
               />
             </div>
@@ -230,7 +230,7 @@ export function PositionForm({ editingPosition, onClose }: PositionFormProps) {
                 id="isin"
                 required
                 value={formData.isin}
-                onChange={e => setFormData({ ...formData, isin: e.target.value })}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, isin: e.target.value })}
                 placeholder="z.B. US0378331005"
               />
             </div>
@@ -241,7 +241,7 @@ export function PositionForm({ editingPosition, onClose }: PositionFormProps) {
                 id="country"
                 required
                 value={formData.country}
-                onChange={e => {
+                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
                   const country = e.target.value
                   // Smart currency selection based on country
                   let currency: Currency = 'EUR'
@@ -278,7 +278,7 @@ export function PositionForm({ editingPosition, onClose }: PositionFormProps) {
                 id="sector"
                 required
                 value={formData.sector}
-                onChange={e => setFormData({ ...formData, sector: e.target.value as Sector })}
+                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setFormData({ ...formData, sector: e.target.value as Sector })}
               >
                 {Object.entries(SECTOR_LABELS).map(([key, label]) => (
                   <option key={key} value={key}>{label}</option>
@@ -295,7 +295,7 @@ export function PositionForm({ editingPosition, onClose }: PositionFormProps) {
                 min="1"
                 step="1"
                 value={formData.quantity}
-                onChange={e => setFormData({ ...formData, quantity: e.target.value })}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, quantity: e.target.value })}
               />
             </div>
 
@@ -308,7 +308,7 @@ export function PositionForm({ editingPosition, onClose }: PositionFormProps) {
                 min="0"
                 step="0.01"
                 value={formData.purchasePrice}
-                onChange={e => setFormData({ ...formData, purchasePrice: e.target.value })}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, purchasePrice: e.target.value })}
               />
             </div>
 
@@ -320,7 +320,7 @@ export function PositionForm({ editingPosition, onClose }: PositionFormProps) {
                 min="0"
                 step="0.01"
                 value={formData.currentPrice}
-                onChange={e => setFormData({ ...formData, currentPrice: e.target.value })}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, currentPrice: e.target.value })}
                 placeholder="Optional - sonst Kaufpreis"
               />
             </div>
@@ -332,7 +332,7 @@ export function PositionForm({ editingPosition, onClose }: PositionFormProps) {
                 type="date"
                 required
                 value={formData.purchaseDate}
-                onChange={e => setFormData({ ...formData, purchaseDate: e.target.value })}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, purchaseDate: e.target.value })}
               />
             </div>
 
@@ -342,7 +342,7 @@ export function PositionForm({ editingPosition, onClose }: PositionFormProps) {
                 id="currency"
                 required
                 value={formData.currency}
-                onChange={e => {
+                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
                   const currency = e.target.value as Currency
                   setFormData({
                     ...formData,
@@ -368,7 +368,7 @@ export function PositionForm({ editingPosition, onClose }: PositionFormProps) {
                   min="0.01"
                   step="0.0001"
                   value={formData.exchangeRate}
-                  onChange={e => setFormData({ ...formData, exchangeRate: e.target.value })}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, exchangeRate: e.target.value })}
                   placeholder="z.B. 0.91"
                 />
               </div>
@@ -383,7 +383,7 @@ export function PositionForm({ editingPosition, onClose }: PositionFormProps) {
                 min="0"
                 step="0.0001"
                 value={formData.dividendPerShare}
-                onChange={e => setFormData({ ...formData, dividendPerShare: e.target.value })}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, dividendPerShare: e.target.value })}
                 placeholder={`In ${formData.currency}`}
               />
             </div>
@@ -394,7 +394,7 @@ export function PositionForm({ editingPosition, onClose }: PositionFormProps) {
                 id="paymentInterval"
                 required
                 value={formData.paymentInterval}
-                onChange={e => setFormData({ ...formData, paymentInterval: e.target.value as PaymentInterval })}
+                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setFormData({ ...formData, paymentInterval: e.target.value as PaymentInterval })}
               >
                 <option value="monthly">Monatlich</option>
                 <option value="quarterly">Quartalsweise</option>
@@ -423,7 +423,7 @@ export function PositionForm({ editingPosition, onClose }: PositionFormProps) {
                     type="date"
                     required={index === 0}
                     value={date}
-                    onChange={e => {
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                       const updated = [...paymentDates]
                       updated[index] = e.target.value
                       setPaymentDates(updated)
