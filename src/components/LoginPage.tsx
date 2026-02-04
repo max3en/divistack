@@ -17,38 +17,44 @@ export function LoginPage({ onLogin }: LoginPageProps) {
 
     const handleLogin = (e: React.FormEvent) => {
         e.preventDefault()
-        // Simple auth for demo/personal use
-        if ((username === 'max3en' || username === 'Anika') && (password === 'diamond' || password === 'diamond')) {
-            localStorage.setItem('divistack-auth', 'true')
+        try {
+            // Simple auth for demo/personal use
+            if ((username === 'max3en' || username === 'Anika') && (password === 'diamond' || password === 'diamond')) {
+                localStorage.setItem('divistack-auth', 'true')
+                onLogin()
+                toast.success(`Willkommen zurück, ${username}!`)
+            } else {
+                toast.error('Ungültige Anmeldedaten')
+            }
+        } catch (err) {
+            console.error('Login error:', err)
+            // Fallback for when localStorage is not available
             onLogin()
-            toast.success(`Willkommen zurück, ${username}!`)
-        } else {
-            toast.error('Ungültige Anmeldedaten')
         }
     }
 
     return (
         <div className="min-h-screen w-full flex items-center justify-center bg-[#08080a] relative overflow-hidden">
-            {/* Background Decorative Elements */}
-            <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-primary/10 rounded-full blur-[120px] pointer-events-none" />
-            <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-primary/10 rounded-full blur-[120px] pointer-events-none" />
+            {/* Background Decorative Elements - Reduced Blur for Performance */}
+            <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-primary/5 rounded-full blur-[80px] z-0" />
+            <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-green-500/5 rounded-full blur-[80px] z-0 hidden md:block" />
 
-            <div className="w-full max-w-md p-6 relative z-10">
-                <div className="text-center mb-10">
-                    <div className="inline-flex items-center justify-center w-20 h-20 rounded-[2rem] bg-primary/10 mb-6 border border-primary/20 shadow-[0_0_40px_rgba(var(--primary),0.2)] animate-pulse">
+            <div className="w-full max-w-md p-6 relative z-10 flex flex-col items-center">
+                <div className="text-center mb-8">
+                    <div className="inline-flex items-center justify-center w-20 h-20 rounded-[2rem] bg-white/5 mb-6 border border-white/10 shadow-glass">
                         <PieChart className="w-10 h-10 text-primary" />
                     </div>
                     <h1 className="text-4xl font-black tracking-tighter text-white uppercase italic">DiviStack</h1>
                     <p className="text-muted-foreground mt-2 font-medium tracking-wide">Dein Portfolio • Dein Erfolg</p>
                 </div>
 
-                <GlassCard className="p-8 border-white/5 shadow-2xl">
-                    <div className="mb-8">
+                <GlassCard className="w-full p-8 border-white/10">
+                    <div className="mb-6">
                         <h2 className="text-xl font-bold text-white tracking-tight">Login</h2>
                         <p className="text-xs text-muted-foreground mt-1 uppercase tracking-widest font-bold opacity-70">Sicherer Zugang</p>
                     </div>
 
-                    <form onSubmit={handleLogin} className="space-y-6">
+                    <form onSubmit={handleLogin} className="space-y-5">
                         <div className="space-y-2">
                             <Label htmlFor="username" className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/80 ml-1">Benutzername</Label>
                             <div className="relative group">
@@ -78,14 +84,14 @@ export function LoginPage({ onLogin }: LoginPageProps) {
                                 />
                             </div>
                         </div>
-                        <Button type="submit" className="w-full h-12 text-sm font-black uppercase tracking-widest bg-primary text-white rounded-2xl shadow-[0_0_20px_rgba(var(--primary),0.3)] hover:shadow-[0_0_30px_rgba(var(--primary),0.5)] transition-all transform hover:translate-y-[-2px] active:translate-y-[0px]">
+                        <Button type="submit" className="w-full h-12 text-sm font-black uppercase tracking-widest bg-primary text-white rounded-2xl shadow-glass hover:opacity-90 transition-all">
                             Anmelden
                         </Button>
                     </form>
                 </GlassCard>
 
-                <p className="text-center text-[10px] text-muted-foreground mt-10 uppercase tracking-[0.3em] font-black opacity-40">
-                    &copy; 2026 DiviStack • built by Marc Ross
+                <p className="text-center text-[10px] text-muted-foreground mt-8 uppercase tracking-[0.3em] font-black opacity-40">
+                    &copy; 2026 DiviStack
                 </p>
             </div>
         </div>
