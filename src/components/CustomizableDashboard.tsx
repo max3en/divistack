@@ -4,7 +4,7 @@ import 'react-grid-layout/css/styles.css'
 import 'react-resizable/css/styles.css'
 import { Button } from './ui/button'
 import { Card, CardContent } from './ui/card'
-import { Settings, Plus, X, GripVertical } from 'lucide-react'
+import { Settings, Plus, X, GripVertical, Check } from 'lucide-react'
 import { WidgetRenderer } from './widgets/WidgetRenderer'
 import { WidgetConfig, AVAILABLE_WIDGETS, WidgetDefinition } from './widgets/WidgetTypes'
 import { cn } from '../lib/cn'
@@ -34,26 +34,33 @@ const DEFAULT_WIDGETS: WidgetConfig[] = [
 ]
 
 export function CustomizableDashboard() {
-  const [widgets, setWidgets] = useState<WidgetConfig[]>([])
+  const [widgets, setWidgets] = useState<WidgetConfig[]>(() => {
+    if (typeof window === 'undefined') return DEFAULT_WIDGETS
+    const saved = localStorage.getItem('divistack-dashboard-widgets')
+    if (saved) {
+      try {
+        return JSON.parse(saved)
+      } catch {
+        return DEFAULT_WIDGETS
+      }
+    }
+    return DEFAULT_WIDGETS
+  })
+
+  const widgetsRef = useRef<WidgetConfig[]>(widgets)
   const [isEditMode, setIsEditMode] = useState(false)
   const [showAddWidget, setShowAddWidget] = useState(false)
+  const [showSaveNotification, setShowSaveNotification] = useState(false)
   const [containerWidth, setContainerWidth] = useState(1200)
   const [rowHeight, setRowHeight] = useState(65)
   const containerRef = useRef<HTMLDivElement>(null)
 
+  // Sync ref with state
   useEffect(() => {
-    const saved = localStorage.getItem('divistack-dashboard-widgets')
-    if (saved) {
-      try {
-        setWidgets(JSON.parse(saved))
-      } catch {
-        setWidgets(DEFAULT_WIDGETS)
-      }
-    } else {
-      setWidgets(DEFAULT_WIDGETS)
-    }
-  }, [])
+    widgetsRef.current = widgets
+  }, [widgets])
 
+  // Update container width on resize
   useEffect(() => {
     const updateWidth = () => {
       if (containerRef.current) {
@@ -73,9 +80,13 @@ export function CustomizableDashboard() {
     }
   }, [])
 
-  const saveWidgets = (newWidgets: WidgetConfig[]) => {
-    setWidgets(newWidgets)
-    localStorage.setItem('divistack-dashboard-widgets', JSON.stringify(newWidgets))
+  const saveToLocalStorage = (currentWidgets: WidgetConfig[]) => {
+    console.log('Dashboard: Saving to localStorage...', currentWidgets.length, 'widgets')
+    localStorage.setItem('divistack-dashboard-widgets', JSON.stringify(currentWidgets))
+
+    // Show notification briefly
+    setShowSaveNotification(true)
+    setTimeout(() => setShowSaveNotification(false), 2000)
   }
 
   const updateRowHeight = (height: number) => {
@@ -85,15 +96,15 @@ export function CustomizableDashboard() {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleLayoutChange = (currentLayout: any, allLayouts: any) => {
-    if (!isEditMode) return
+    // We always want to update the internal state even if not in "Edit Mode" 
+    // to handle RGL's responsive adjustments, but we only PERSIST in Edit Mode.
 
-    // Wir speichern nur das primäre (Desktop) Layout, 
-    // die anderen werden von RGL generiert wenn nicht vorhanden.
-    // Oder wir speichern alle, aber für Einfachheit bleiben wir bei einem.
-    const desktopLayout = allLayouts.lg || currentLayout
+    const activeLayout = currentLayout || allLayouts.lg
+    if (!activeLayout) return
 
-    const updatedWidgets = widgets.map(widget => {
-      const layoutItem = desktopLayout.find((l: LayoutItem) => l.i === widget.id)
+    const currentWidgets = widgetsRef.current
+    const updatedWidgets = currentWidgets.map(widget => {
+      const layoutItem = activeLayout.find((l: any) => l.i === widget.id)
       if (layoutItem) {
         return {
           ...widget,
@@ -106,7 +117,16 @@ export function CustomizableDashboard() {
       return widget
     })
 
-    saveWidgets(updatedWidgets)
+    // Compare to avoid infinite loops if nothing actually changed
+    const changed = JSON.stringify(updatedWidgets) !== JSON.stringify(currentWidgets)
+
+    if (changed) {
+      setWidgets(updatedWidgets)
+      // Only save to disk if we are explicitly editing
+      if (isEditMode) {
+        saveToLocalStorage(updatedWidgets)
+      }
+    }
   }
 
   const addWidget = (definition: WidgetDefinition) => {
@@ -124,17 +144,22 @@ export function CustomizableDashboard() {
       h: definition.defaultSize.h,
     }
 
-    saveWidgets([...widgets, newWidget])
+    const updated = [...widgets, newWidget]
+    setWidgets(updated)
+    saveToLocalStorage(updated)
     setShowAddWidget(false)
   }
 
   const removeWidget = (id: string) => {
-    saveWidgets(widgets.filter(w => w.id !== id))
+    const updated = widgets.filter(w => w.id !== id)
+    setWidgets(updated)
+    saveToLocalStorage(updated)
   }
 
   const resetToDefault = () => {
     if (confirm('Dashboard auf Standard zurücksetzen? Alle Anpassungen gehen verloren.')) {
-      saveWidgets(DEFAULT_WIDGETS)
+      setWidgets(DEFAULT_WIDGETS)
+      saveToLocalStorage(DEFAULT_WIDGETS)
     }
   }
 
@@ -195,6 +220,9 @@ export function CustomizableDashboard() {
           <Button
             size="sm"
             onClick={() => {
+              if (isEditMode) {
+                saveToLocalStorage(widgets)
+              }
               setIsEditMode(!isEditMode)
               setShowAddWidget(false)
             }}
@@ -210,6 +238,14 @@ export function CustomizableDashboard() {
           </Button>
         </div>
       </div>
+
+      {/* Save Notification */}
+      {showSaveNotification && (
+        <div className="fixed top-24 right-10 bg-primary/20 backdrop-blur-xl border border-primary/30 text-white px-4 py-2 rounded-2xl text-[10px] font-black uppercase tracking-widest flex items-center gap-2 z-[100] animate-in fade-in slide-in-from-top-4 shadow-[0_0_20px_rgba(var(--primary),0.2)]">
+          <Check className="h-4 w-4 text-primary" />
+          <span>Layout gespeichert</span>
+        </div>
+      )}
 
       {/* Add Widget Panel */}
       {showAddWidget && isEditMode && (
