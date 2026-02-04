@@ -11,7 +11,7 @@ import { LoginPage } from './components/LoginPage'
 
 type View = 'dashboard' | 'portfolio' | 'calendar' | 'drip' | 'savingsplan' | 'settings'
 
-export default function App() {
+export function App() {
   const [currentView, setCurrentView] = useState<View>('dashboard')
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false)
   const [isInitializing, setIsInitializing] = useState(true)
