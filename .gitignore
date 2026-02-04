@@ -1,0 +1,37 @@
+# Dependencies
+node_modules/
+.npm-cache/
+
+# Build output
+dist/
+release/
+build/
+
+# Electron
+*.exe
+*.dmg
+*.AppImage
+
+# Environment
+.env
+.env.local
+
+# IDE
+.idea/
+.vscode/
+*.sublime-*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+
+# Temp files
+tmp*
+*.tmp
+
+# Test files
+test-*.html
