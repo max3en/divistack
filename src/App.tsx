@@ -6,7 +6,7 @@ import { useState, useEffect } from 'react'
 // import { TaxSettings } from './components/TaxSettings'
 // import { DRIPSimulator } from './components/DRIPSimulator'
 // import { SavingsPlanCalculator } from './components/SavingsPlanCalculator'
-// import { PortfolioProvider } from './context/PortfolioContext'
+import { PortfolioProvider } from './context/PortfolioContext'
 import { LoginPage } from './components/LoginPage'
 
 type View = 'dashboard' | 'portfolio' | 'calendar' | 'drip' | 'savingsplan' | 'settings'
@@ -36,22 +36,22 @@ export function App() {
   }
 
   return (
-    // <PortfolioProvider>
-    //   <Layout
-    //     currentView={currentView}
-    //     onNavigate={setCurrentView}
-    //     onLogout={handleLogout}
-    //   >
-    //     {currentView === 'dashboard' && <CustomizableDashboard />}
-    //     {currentView === 'portfolio' && <PortfolioList />}
-    //     {currentView === 'calendar' && <DividendCalendar />}
-    //     {currentView === 'drip' && <DRIPSimulator />}
-    //     {currentView === 'savingsplan' && <SavingsPlanCalculator />}
-    //     {currentView === 'settings' && <TaxSettings />}
-    //   </Layout>
-    // </PortfolioProvider>
-    <div className="flex items-center justify-center h-screen w-full bg-[#08080a] text-white">
-      <h1>App Loaded - Waiting for Logic</h1>
-    </div>
+    <PortfolioProvider>
+      {/* <Layout
+        currentView={currentView}
+        onNavigate={setCurrentView}
+        onLogout={handleLogout}
+      >
+        {currentView === 'dashboard' && <CustomizableDashboard />}
+        {currentView === 'portfolio' && <PortfolioList />}
+        {currentView === 'calendar' && <DividendCalendar />}
+        {currentView === 'drip' && <DRIPSimulator />}
+        {currentView === 'savingsplan' && <SavingsPlanCalculator />}
+        {currentView === 'settings' && <TaxSettings />}
+      </Layout> */}
+      <div className="flex items-center justify-center h-screen w-full bg-[#08080a] text-white">
+        <h1>App Loaded - PortfolioProvider Active</h1>
+      </div>
+    </PortfolioProvider>
   )
 }
