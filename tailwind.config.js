@@ -45,6 +45,9 @@ export default {
           blue: "hsl(var(--neon-blue))",
         }
       },
+      boxShadow: {
+        'glass': '0 8px 32px 0 rgba(0, 0, 0, 0.37)',
+      },
       borderRadius: {
         '3xl': '1.5rem',
         '4xl': '2rem',
