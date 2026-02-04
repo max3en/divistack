@@ -1,18 +1,18 @@
 import { useState, useEffect } from 'react'
 import { Layout } from './components/Layout'
-import { CustomizableDashboard } from './components/CustomizableDashboard'
+// import { CustomizableDashboard } from './components/CustomizableDashboard'
 import { PortfolioList } from './components/PortfolioList'
-import { DividendCalendar } from './components/DividendCalendar'
-import { TaxSettings } from './components/TaxSettings'
-import { DRIPSimulator } from './components/DRIPSimulator'
-import { SavingsPlanCalculator } from './components/SavingsPlanCalculator'
+// import { DividendCalendar } from './components/DividendCalendar'
+// import { TaxSettings } from './components/TaxSettings'
+// import { DRIPSimulator } from './components/DRIPSimulator'
+// import { SavingsPlanCalculator } from './components/SavingsPlanCalculator'
 import { PortfolioProvider } from './context/PortfolioContext'
 import { LoginPage } from './components/LoginPage'
 
 type View = 'dashboard' | 'portfolio' | 'calendar' | 'drip' | 'savingsplan' | 'settings'
 
 export function App() {
-  const [currentView, setCurrentView] = useState<View>('dashboard')
+  const [currentView, setCurrentView] = useState<View>('portfolio') // CHANGED to portfolio
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false)
   const [isInitializing, setIsInitializing] = useState(true)
 
@@ -42,12 +42,16 @@ export function App() {
         onNavigate={setCurrentView}
         onLogout={handleLogout}
       >
-        {currentView === 'dashboard' && <CustomizableDashboard />}
+        <div className="p-4 bg-yellow-500/10 mb-4 text-yellow-500 rounded text-center">
+          Debug Mode: Only PortfolioList is active. If this works, the Dashboard is the problem.
+        </div>
+
+        {/* {currentView === 'dashboard' && <CustomizableDashboard />} */}
         {currentView === 'portfolio' && <PortfolioList />}
-        {currentView === 'calendar' && <DividendCalendar />}
+        {/* {currentView === 'calendar' && <DividendCalendar />}
         {currentView === 'drip' && <DRIPSimulator />}
         {currentView === 'savingsplan' && <SavingsPlanCalculator />}
-        {currentView === 'settings' && <TaxSettings />}
+        {currentView === 'settings' && <TaxSettings />} */}
       </Layout>
     </PortfolioProvider>
   )
