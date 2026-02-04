@@ -17,7 +17,13 @@ interface WidgetRendererProps {
   rowHeight?: number
 }
 
-const COLORS = ['#A855F7', '#10B981', '#F59E0B', '#3B82F6', '#EC4899', '#06B6D4', '#84CC16', '#EF4444']
+const CHART_COLORS = [
+  'hsl(var(--chart-1))',
+  'hsl(var(--chart-2))',
+  'hsl(var(--chart-3))',
+  'hsl(var(--chart-4))',
+  'hsl(var(--chart-5))'
+]
 
 export function WidgetRenderer({ type, rowHeight = 65 }: WidgetRendererProps) {
   const { positions, taxConfig } = usePortfolio()
@@ -177,12 +183,12 @@ export function WidgetRenderer({ type, rowHeight = 65 }: WidgetRendererProps) {
               <BarChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                 <defs>
                   <linearGradient id="barGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#A855F7" stopOpacity={1} />
-                    <stop offset="100%" stopColor="#A855F7" stopOpacity={0.3} />
+                    <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity={1} />
+                    <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity={0.3} />
                   </linearGradient>
                   <linearGradient id="barGradientActive" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#A855F7" stopOpacity={1} />
-                    <stop offset="100%" stopColor="#A855F7" stopOpacity={0.8} />
+                    <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity={1} />
+                    <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity={0.8} />
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#ffffff" strokeOpacity={0.05} />
@@ -239,7 +245,7 @@ export function WidgetRenderer({ type, rowHeight = 65 }: WidgetRendererProps) {
                   stroke="none"
                 >
                   {sectorData.map((_, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    <Cell key={`cell-${index}`} fill={CHART_COLORS[index % CHART_COLORS.length]} />
                   ))}
                 </Pie>
                 <Tooltip
