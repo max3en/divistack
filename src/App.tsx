@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-// import { Layout } from './components/Layout'
+import { Layout } from './components/Layout'
 // import { CustomizableDashboard } from './components/CustomizableDashboard'
 // import { PortfolioList } from './components/PortfolioList'
 // import { DividendCalendar } from './components/DividendCalendar'
@@ -37,21 +37,21 @@ export function App() {
 
   return (
     <PortfolioProvider>
-      {/* <Layout
+      <Layout
         currentView={currentView}
         onNavigate={setCurrentView}
         onLogout={handleLogout}
       >
-        {currentView === 'dashboard' && <CustomizableDashboard />}
+        <div className="flex items-center justify-center h-full w-full text-white">
+          <h1>Layout Active - Waiting for Components</h1>
+        </div>
+        {/* {currentView === 'dashboard' && <CustomizableDashboard />}
         {currentView === 'portfolio' && <PortfolioList />}
         {currentView === 'calendar' && <DividendCalendar />}
         {currentView === 'drip' && <DRIPSimulator />}
         {currentView === 'savingsplan' && <SavingsPlanCalculator />}
-        {currentView === 'settings' && <TaxSettings />}
-      </Layout> */}
-      <div className="flex items-center justify-center h-screen w-full bg-[#08080a] text-white">
-        <h1>App Loaded - PortfolioProvider Active</h1>
-      </div>
+        {currentView === 'settings' && <TaxSettings />} */}
+      </Layout>
     </PortfolioProvider>
   )
 }
