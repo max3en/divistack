@@ -153,7 +153,7 @@ export function CustomizableDashboard() {
     <div className="space-y-4" ref={containerRef}>
       {/* Header Controls */}
       {/* Header Controls */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 py-8">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 py-4">
         <div>
           <h2 className="text-3xl font-black tracking-tighter text-white italic uppercase">
             Übersicht

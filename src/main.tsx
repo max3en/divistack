@@ -24,7 +24,7 @@ if (cachedStocks) {
 }
 
 // Starte automatische Synchronisation
-// initAutoSync()
+initAutoSync()
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

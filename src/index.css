@@ -49,6 +49,73 @@
     --input: 240 10% 12%;
     --ring: 263 100% 70%;
   }
+
+  /* Matrix Mode */
+  .theme-matrix {
+    --background: 120 10% 4%;
+    --foreground: 120 100% 70%;
+    --card: 120 10% 6%;
+    --card-foreground: 120 100% 70%;
+    --primary: 120 100% 50%;
+    --primary-foreground: 0 0% 0%;
+    --secondary: 120 20% 10%;
+    --secondary-foreground: 120 100% 70%;
+    --muted: 120 20% 10%;
+    --muted-foreground: 120 60% 40%;
+    --accent: 120 100% 50%;
+    --accent-foreground: 0 0% 0%;
+    --destructive: 0 100% 50%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 120 50% 20%;
+    --input: 120 50% 10%;
+    --ring: 120 100% 50%;
+  }
+
+  /* Cyberpunk Mode */
+  .theme-cyberpunk {
+    --background: 260 15% 10%;
+    --foreground: 60 100% 60%;
+    --card: 260 15% 13%;
+    --card-foreground: 190 100% 50%;
+    --primary: 60 100% 50%;
+    /* Yellow */
+    --primary-foreground: 0 0% 0%;
+    --secondary: 0 100% 50%;
+    /* Red */
+    --secondary-foreground: 0 0% 100%;
+    --muted: 260 10% 20%;
+    --muted-foreground: 260 20% 60%;
+    --accent: 190 100% 50%;
+    /* Cyan */
+    --accent-foreground: 0 0% 0%;
+    --destructive: 0 100% 60%;
+    --border: 60 100% 50%;
+    --input: 260 15% 20%;
+    --ring: 60 100% 50%;
+  }
+
+  /* Freak Mode */
+  .theme-freak {
+    --background: 280 30% 10%;
+    --foreground: 300 100% 70%;
+    --card: 280 30% 15%;
+    --card-foreground: 300 100% 80%;
+    --primary: 320 100% 50%;
+    /* Hot Pink */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 260 100% 50%;
+    /* Purple */
+    --secondary-foreground: 0 0% 100%;
+    --muted: 280 20% 20%;
+    --muted-foreground: 300 50% 60%;
+    --accent: 180 100% 50%;
+    /* Cyan */
+    --accent-foreground: 0 0% 0%;
+    --destructive: 0 100% 50%;
+    --border: 320 100% 40%;
+    --input: 280 30% 20%;
+    --ring: 320 100% 60%;
+  }
 }
 
 @layer base {
@@ -57,10 +124,8 @@
   }
 
   body {
-    @apply bg-[#08080a] text-foreground selection:bg-primary/30;
-    background-image:
-      radial-gradient(at 0% 0%, hsla(263, 100%, 70%, 0.05) 0px, transparent 50%),
-      radial-gradient(at 100% 100%, hsla(142, 100%, 70%, 0.03) 0px, transparent 50%);
+    @apply bg-background text-foreground selection:bg-primary/30;
+    transition: background-color 0.5s ease, color 0.5s ease;
     min-height: 100vh;
   }
 }
