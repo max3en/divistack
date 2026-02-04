@@ -293,7 +293,10 @@ export function CustomizableDashboard() {
                 'h-full',
                 isEditMode && 'pointer-events-none'
               )}>
-                <WidgetRenderer type={widget.type} rowHeight={rowHeight} />
+                {/* <WidgetRenderer type={widget.type} rowHeight={rowHeight} /> */}
+                <div className="w-full h-full bg-white/5 border border-white/10 flex items-center justify-center text-xs text-muted-foreground">
+                  DEBUG: {widget.type}
+                </div>
               </div>
             </div>
           ))}
